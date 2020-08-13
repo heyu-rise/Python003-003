@@ -194,6 +194,99 @@ concat("earth", "mars", "venus", sep=".")
 [(4, 'four'), (1, 'one'), (3, 'three'), (2, 'two')]
 ```
 
+### 5. 数据结构
+
+#### 5.1. 列表、元组
+
+- 列表和元组，都是**一个可以放置任意数据类型的有序集合**
+
+- **列表是动态的**，长度大小不固定，可以随意地增加、删减或者改变元素（**mutable**）
+
+- **而元组是静态的**，长度大小固定，无法增加删减或者改变（**immutable**）
+
+- **列表和元组都支持负数索引**，-1 表示最后一个元素，-2 表示倒数第二个元素
+
+- 两者也可以通过 list() 和 tuple() 函数相互转换
+
+  ```python
+  list((1, 2, 3))
+  [1, 2, 3]
+  tuple([1, 2, 3])
+  (1, 2, 3)
+  ```
+
+#### 5.4. 集合、字典
+
+- 字典是一系列由键（key）和值（value）配对组成的元素的集合
+- 在 Python3.7+，字典被确定为有序
+- 集合是由不重复元素组成的无序的集
+- 集合和字典基本相同，唯一的区别，就是集合没有键和值的配对，是一系列无序的、唯一的元素组合
+- 集合并不支持索引操作，因为集合本质上是一个哈希表，和列表不一样
+- 想要判断一个元素在不在字典或集合内，我们可以用 value in dict/set 来判断
+
+#### 5.6. 循环
+
+> 当在字典中循环时，用 `items()` 方法可将关键字和对应的值同时取出
+
+```python
+knights = {'gallahad': 'the pure', 'robin': 'the brave'}
+for k, v in knights.items():
+    print(k, v)
+    
+gallahad the pure
+robin the brave
+```
+
+> 当在序列中循环时，用 [`enumerate()`](https://docs.python.org/zh-cn/3.7/library/functions.html#enumerate) 函数可以将索引位置和其对应的值同时取出
+
+```python
+for i, v in enumerate(['tic', 'tac', 'toe']):
+    print(i, v)
+    
+0 tic
+1 tac
+2 toe
+```
+
+> 当同时在两个或更多序列中循环时，可以用 [`zip()`](https://docs.python.org/zh-cn/3.7/library/functions.html#zip) 函数将其内元素一一匹配。
+
+```python
+questions = ['name', 'quest', 'favorite color']
+answers = ['lancelot', 'the holy grail', 'blue']
+for q, a in zip(questions, answers):
+    print('What is your {0}?  It is {1}.'.format(q, a))
+    
+What is your name?  It is lancelot.
+What is your quest?  It is the holy grail.
+What is your favorite color?  It is blue.
+```
+
+> 如果要逆向循环一个序列，可以先正向定位序列，然后调用 [`reversed()`](https://docs.python.org/zh-cn/3.7/library/functions.html#reversed) 函数
+
+```python
+for i in reversed(range(1, 10, 2)):
+    print(i)
+    
+9
+7
+5
+3
+1
+```
+
+> 如果要按某个指定顺序循环一个序列，可以用 [`sorted()`](https://docs.python.org/zh-cn/3.7/library/functions.html#sorted) 函数，它可以在不改动原序列的基础上返回一个新的排好序的序列
+
+```python
+basket = ['apple', 'orange', 'apple', 'pear', 'orange', 'banana']
+for f in sorted(set(basket)):
+    print(f)
+    
+apple
+banana
+orange
+pear
+```
+
 
 
 ## HTML（超文本标记语言）的基础
