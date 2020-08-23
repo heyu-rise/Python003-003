@@ -287,7 +287,55 @@ orange
 pear
 ```
 
+### 6.模块
 
+> **模块是一个包含Python定义和语句的文件**。文件名就是模块名后跟文件后缀 `.py` 。在一个模块内部，模块名（作为一个字符串）可以通过全局变量 `__name__` 的值获得。例如，使用你最喜爱的文本编辑器在当前目录下创建一个名为 `fibo.py` 的文件， 文件中含有以下内容:
+
+```python
+# Fibonacci numbers module
+
+def fib(n):    # write Fibonacci series up to n
+    a, b = 0, 1
+    while a < n:
+        print(a, end=' ')
+        a, b = b, a+b
+    print()
+
+def fib2(n):   # return Fibonacci series up to n
+    result = []
+    a, b = 0, 1
+    while a < n:
+        result.append(a)
+        a, b = b, a+b
+    return result
+```
+
+> 进入Python解释器，并用以下命令导入模块
+
+```python
+import fibo
+```
+
+> 在当前的符号表中，这并不会直接进入到定义在 `fibo` 函数内的名称；它只是进入到模块名 `fibo` 中。你可以用模块名访问这些函数：
+
+```python
+fibo.fib(1000)
+fibo.fib2(100)
+fibo.__name__
+
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987
+[0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+'fibo'
+```
+
+如果你想经常使用某个函数，你可以把它赋值给一个局部变量：
+
+```python
+fib = fibo.fib
+fib(500)
+
+0 1 1 2 3 5 8 13 21 34 55 89 144 233 377
+```
 
 ## HTML（超文本标记语言）的基础
 
