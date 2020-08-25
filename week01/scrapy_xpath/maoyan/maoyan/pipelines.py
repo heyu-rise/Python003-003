@@ -8,12 +8,21 @@ import pandas
 
 
 class MaoyanPipeline:
+
+    file_data = []
+
+    # def open_spider(self, spider):
+    #     pass
+
     def process_item(self, item, spider):
         name = item['name']
-        type = item['type']
+        film_type = item['type']
         date = item['date']
-        file_data_item = (name, type, date)
-        # 写入csv
-        films = pandas.DataFrame(data=[file_data_item])
-        films.to_csv('./films.csv', mode='a+', encoding='utf-8', index=False, header=False)
+        file_data_item = (name, film_type, date)
+        self.file_data.append(file_data_item)
         return item
+
+    def close_spider(self, spider):
+        # 写入csv
+        films = pandas.DataFrame(data=self.file_data)
+        films.to_csv('./films.csv', mode='a', encoding='utf-8', index=False, header=False)
