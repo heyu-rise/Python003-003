@@ -22,6 +22,8 @@ class ProxymysqlPipeline:
         return item
 
     def close_spider(self, spider):
+        if len(self.file_data) == 0:
+            return
         sql = 'INSERT INTO film (`name`, `type`, `date`) VALUES '
         for i in range(0, len(self.file_data)):
             film_data = self.file_data[i]
