@@ -31,6 +31,5 @@ class ProxymysqlPipeline:
             if i != 0:
                 sql = sql + ','
             sql = sql + f'("{name}", "{film_type}", "{date}")'
-        # 写入csv
-        print(sql)
+        # 写入mysql
         db.run(sql)
