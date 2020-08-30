@@ -15,6 +15,60 @@
 - Python 中的类：[ https://docs.python.org/zh-cn/3.7/tutorial/classes.html](https://docs.python.org/zh-cn/3.7/tutorial/classes.html)
 - Python 定义函数：[ https://docs.python.org/zh-cn/3.7/tutorial/controlflow.html#defining-functions](https://docs.python.org/zh-cn/3.7/tutorial/controlflow.html#defining-functions)
 
+### 1、pip
+
+#### 1.1、常用 pip 源地址
+
+- 豆瓣：[ https://pypi.doubanio.com/simple/](https://pypi.doubanio.com/simple/)
+- 清华：[ https://mirrors.tuna.tsinghua.edu.cn/help/pypi/](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)
+- 中科大：[ https://pypi.mirrors.ustc.edu.cn/simple/](https://pypi.mirrors.ustc.edu.cn/simple/)
+- 阿里云：[ https://mirrors.aliyun.com/pypi/simple/](https://mirrors.aliyun.com/pypi/simple/)
+
+#### 1.2、修改源地址
+
+**临时替换**
+
+```shell
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+```
+
+**永久替换（先升级 pip：pip install pip -U ）**
+
+```shell
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+#### 1.3、导入导出
+
+**导出**
+
+```shell
+pip freeze > requirements.txt
+```
+
+**导入**
+
+```shell
+pip install -r requirements.txt
+```
+
+### 2、venv虚拟环境
+
+**新建虚拟环境**
+
+```
+python -m venv {venv_name}
+```
+
+**激活虚拟环境**
+
+```shell
+source {venv_name}/bin/activate    # mac
+{venv_name}\Scripts\activate.bat   # windows
+```
+
+> 虚拟环境可以让让程序跑在不同的版本环境中
+
 ### 4.其他流程控制工具
 
 #### 4.7.定义函数的更多形式
