@@ -100,9 +100,14 @@ error: 1 is invalid input
 
 > 单request不能准确的请求到想要的数据的时候，可以通过WebDriver来模拟点击行为来获取数据
 
+[插件下载](http://chromedriver.storage.googleapis.com/index.html)
+
 **注意**
 
 - 如果需要操作的对象嵌套在frame中，需要switch到frame中查找
+- 插件应该放在Python Interpreter同级目录下
+
+
 
 ### 5.2、文件下载
 
