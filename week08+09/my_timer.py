@@ -4,11 +4,11 @@ import time
 def timer(func):
     def wrapper(*args, **kwargs):
         start = time.time()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         close = time.time()
         func_time = close - start
         print(f"函数运行时间：{func_time:.2f}秒")
-
+        return result
     return wrapper
 
 

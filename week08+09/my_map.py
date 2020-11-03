@@ -1,12 +1,14 @@
-def my_map(func, *args):
-    for item in args:
-        yield func(item)
+def my_map(func, *seqs):
+    for args in zip(*seqs):
+        yield func(*args)
 
 
-def concat(x):
-    return x + x
+def concat(x, y):
+    return x * y
 
 
 if __name__ == "__main__":
-    result = my_map(concat, '1', '2')
+    a = [1, 2, 5]
+    b = [3, 4, 9]
+    result = my_map(concat, a, b)
     print(list(result))
