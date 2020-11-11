@@ -8,7 +8,13 @@
 import scrapy
 
 
-class SmzdmItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class GoodItem(scrapy.Item):
+    id = scrapy.Field
+    name = scrapy.Field
+    desc = scrapy.Field
+
+
+class CommentItem(scrapy.Item):
+    id = scrapy.Field
+    ccomment = scrapy.Field
+    create_time = scrapy.Field
