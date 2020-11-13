@@ -21,7 +21,7 @@ ua = UserAgent(verify_ssl=False)
 USER_AGENT = ua.random
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -68,7 +68,7 @@ DOWNLOAD_DELAY = 3
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   'smzdm.pipelines.SmzdmPipeline': 300,
+   'smzdm.pipelines.SmzdmPipeline': 300
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -91,3 +91,11 @@ ITEM_PIPELINES = {
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+DB_INFO = {
+   'host': '47.93.30.98',
+   'port': 3306,
+   'user': 'root',
+   'password': 'mn814561293',
+   'db': 'smzdm'
+}

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-import re
-import time
 import datetime
+import re
 
 import scrapy
 from scrapy.selector import Selector
-
-# from smzdm.items import GoodItem
+from smzdm.items import GoodItem
 
 id_pattern = '\\d{7,15}'
+time_pattern = '\\d{1,2}'
 
 
 class PhoneSpider(scrapy.Spider):
@@ -19,41 +18,88 @@ class PhoneSpider(scrapy.Spider):
     def parse(self, response):
         detail_urls = Selector(response=response).xpath('//ul[@id="feed-main-list"]//div/div['
                                                         '@class="z-feed-img"]/a/@href').extract()
-        print(detail_urls)
         num = 10
-        if len(detail_urls) > 10:
-            detail_urls = detail_urls[:10]
+        if len(detail_urls) > num:
+            detail_urls = detail_urls[:num]
         for good_url in detail_urls:
-            id = get_id_by_url(response.url)
+            id = get_id_by_url(good_url)
             if id is None:
                 continue
             meta_data = {'id': id}
             yield scrapy.Request(url=good_url, meta=meta_data, callback=self.parse_detail)
 
     def parse_detail(self, response):
-        meta_data = response.meta['id']
+        meta_data = response.meta
         content = Selector(response=response).xpath('//div[@id="feed-main"]')
         name = content.xpath('//h1[@class="title J_title"]/text()').extract_first()
         desc = content.xpath('//div[@class="describe"]/text()').extract_first()
-        # item_good = GoodItem()
-        # item_good['id'] = meta_data['id']
-        # item_good['name'] = name
-        # item_good['desc'] = desc
-        # yield item_good
+        item_good = GoodItem()
+        item_good['id'] = meta_data['id']
+        item_good['name'] = name
+        item_good['desc'] = desc
+        comments = Selector(response=response).xpath(
+            '//section[@id="comments"]//div[@id="commentTabBlockNew"]//li[@class="comment_list"]')
+        good_comments = []
+        for item in comments:
+            comment = item.xpath('.//div[@class="comment_conBox"]/div[@class="comment_conWrap"]//span['
+                                 '@itemprop="description"]/text()').extract_first()
+            date = item.xpath('.//div[@class="time"]/text()').extract_first()
+            date = get_time(date)
+            good_comment = {'id': meta_data['id'], 'comment': comment, 'create_time': date}
+            good_comments.append(good_comment)
+        item_good['comment'] = good_comments
+        meta_data = {'item': item_good}
+        next_page = content.xpath('//section[@id="comments"]//li[@class="pagedown"]/a/@href').extract_first()
+        if next_page:
+            yield scrapy.Request(url=next_page, meta=meta_data, callback=self.parse_comment)
+        else:
+            yield item_good
 
     def parse_comment(self, response):
-        content = Selector(response=response).xpath('//section[@id="comments"]//div[@id="commentTabBlockNew"]//li['
-                                                    '@class="comment_list"]').extract()
-        comment = content.xpath(
-            '//div[@class="comment_conBox"]/div[@class="comment_conWrap"]//span[@itemprop="description"]/text()').extract_first()
-        pass
-
+        meta_data = response.meta
+        item_good = meta_data['item']
+        content = Selector(response=response).xpath(
+            '//section[@id="comments"]//div[@id="commentTabBlockNew"]//li[@class="comment_list"]')
+        for item in content:
+            comment = item.xpath('.//div[@class="comment_conBox"]/div[@class="comment_conWrap"]//span['
+                                 '@itemprop="description"]/text()').extract_first()
+            date = item.xpath('.//div[@class="time"]/text()').extract_first()
+            date = get_time(date)
+            good_comment = {'id': item_good['id'], 'comment': comment, 'create_time': date}
+            item_good['comment'].append(good_comment)
+        next_page = content.xpath('//section[@id="comments"]//li[@class="pagedown"]/a/@href').extract_first()
+        if next_page:
+            yield scrapy.Request(url=next_page, meta=meta_data, callback=self.parse_comment)
+        else:
+            yield item_good
 
 def get_id_by_url(url):
     nums = re.findall(id_pattern, url)
     if len(nums) == 0:
         return None
     return nums[0]
+
+
+def get_time(time_str):
+    # time_str = '14小时前'
+    # time_str = '11-11 16:17'
+    comment_time = datetime.datetime.now()
+    if time_str.__contains__('小时'):
+        hour = re.findall(time_pattern, time_str)[0]
+        comment_time = comment_time - datetime.timedelta(hours=float(hour))
+    elif time_str.__contains__('分钟'):
+        minute = re.findall(time_pattern, time_str)[0]
+        comment_time = comment_time - datetime.timedelta(minutes=float(minute))
+    elif time_str.__contains__('秒'):
+        second = re.findall(time_pattern, time_str)[0]
+        comment_time = comment_time - datetime.timedelta(seconds=float(second))
+    elif time_str.__contains__('刚刚'):
+        comment_time = datetime.datetime.now()
+    else:
+        time_str = '2020-' + time_str + ':00'
+        comment_time = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
+    comment_time = comment_time.strftime('%Y-%m-%d %H:%M:%S')
+    return comment_time
 
 
 def test2():
@@ -65,20 +111,22 @@ def test2():
             print('sucess')
         else:
             print('filue')
-    content = Selector(text=a).xpath('//section[@id="comments"]//div[@id="commentTabBlockNew"]//li[@class="comment_list"]')
-    print(len(content))
-    for item in content:
-        comment = item.xpath('.//div[@class="comment_conBox"]/div[@class="comment_conWrap"]//span['
-                             '@itemprop="description"]/text()').extract_first()
-        date = item.xpath('.//div[@class="time"]/text()').extract_first()
-        print(comment)
-        print(date)
-
+    content = Selector(text=a).xpath(
+        '//section[@id="comments"]//div[@id="commentTabBlockNew"]//li[@class="comment_list"]')
+    next_page = content.xpath('//section[@id="comments"]//li[@class="pagedown"]/a/@href').extract_first()
+    print(next_page)
+    if next_page:
+        print('xxx')
+    else:
+        print('aaa')
 
 
 if __name__ == '__main__':
     # a = 'https://www.smzdm.com/p/26806997/'
     # x = get_id_by_url(a)
     # print(x)
-    test2()
-    print(datetime.datetime.now())
+    # test2()
+    # print(datetime.datetime.now())
+    comment_time = datetime.datetime.now()
+    xxx = comment_time.strftime('%Y-%m-%d %H:%M:%')
+    print(xxx)
