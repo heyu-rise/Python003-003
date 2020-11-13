@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
+import time
+import datetime
 
 import scrapy
 from scrapy.selector import Selector
@@ -48,7 +50,7 @@ class PhoneSpider(scrapy.Spider):
 
 
 def get_id_by_url(url):
-    nums = re.findall(id_pattern, a)
+    nums = re.findall(id_pattern, url)
     if len(nums) == 0:
         return None
     return nums[0]
@@ -63,15 +65,14 @@ def test2():
             print('sucess')
         else:
             print('filue')
-    content = Selector(text=a).xpath('//section[@id="comments"]//div[@id="commentTabBlockNew"]//li['
-                                     '@class="comment_list"]')
+    content = Selector(text=a).xpath('//section[@id="comments"]//div[@id="commentTabBlockNew"]//li[@class="comment_list"]')
     print(len(content))
     for item in content:
         comment = item.xpath('.//div[@class="comment_conBox"]/div[@class="comment_conWrap"]//span['
                              '@itemprop="description"]/text()').extract_first()
-        data = item.xpath('.//div[@class="comment_conBox"]/div[@class="comment_conWrap"]//span['
-                             '@itemprop="description"]/text()').extract_first()
-        print(item)
+        date = item.xpath('.//div[@class="time"]/text()').extract_first()
+        print(comment)
+        print(date)
 
 
 
@@ -80,3 +81,4 @@ if __name__ == '__main__':
     # x = get_id_by_url(a)
     # print(x)
     test2()
+    print(datetime.datetime.now())
