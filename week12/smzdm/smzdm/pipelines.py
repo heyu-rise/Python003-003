@@ -41,7 +41,6 @@ class SmzdmPipeline:
         self.conn.commit()
         cur.execute(sql_good_insert)
         self.conn.commit()
-        print(comments)
         cur.executemany('INSERT INTO `good_comment` (`good_id`,`comment`,`create_time`) VALUES (%s,%s,%s)', comments)
         self.conn.commit()
         cur.close()
