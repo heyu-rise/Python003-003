@@ -17,6 +17,14 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid">
+                    <!-- Navbar Search-->
+                    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                        <div class="input-group" style="margin: 5px">
+                            <input id="nameInput" class="form-control" type="text" placeholder="名称" aria-label="Search"
+                                   aria-describedby="basic-addon2" value="{{content}}"/>
+                            <button style="margin-left: 5px" class="btn btn-primary" type="button" onclick="search()">搜索</button>
+                        </div>
+                    </form>
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table mr-1"></i>
@@ -60,4 +68,15 @@
 <script src="assets/demo/datatables-demo.js"></script>
 <script src="{% static 'js/scripts.js' %}"></script>
 <script src="{% static 'assets/demo/datatables-demo.js' %}"></script>
+<script>
+    function search(){
+        var search = $("#nameInput").val()
+        if(search){
+            window.open('/good/' + search, '_self')
+        } else {
+            window.open('/good', '_self')
+        }
+    }
+
+</script>
 {% endblock %}

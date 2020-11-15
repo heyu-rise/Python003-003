@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
-    path('comment/<int:content>', views.page_comment),
-    path('api/good', views.good),
-    path('api/comment/<int:content>', views.comment)
+    path('good', views.index),
+    path('good/<str:content>', views.index_search),
+    path('comment/<int:content>', views.page_comment)
 ]

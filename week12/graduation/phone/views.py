@@ -1,7 +1,6 @@
-from django.http import JsonResponse
-from django.shortcuts import render
-import json
 import re
+
+from django.shortcuts import render
 
 from .models import Good, GoodComment
 
@@ -15,7 +14,18 @@ def index(request):
     return render(request, 'index.html', locals())
 
 
+def index_search(request, content):
+    queryset = Good.objects.all()
+    conditions = {'name__contains': content}
+    goods = queryset.filter(**conditions).all()
+    return render(request, 'index.html', locals())
+
+
 def page_comment(request, content):
+    print(request)
+    desc_search = request.GET.get('desc')
+    start_date = request.GET.get('startDate')
+    end_date = request.GET.get('endDate')
     queryset = Good.objects.all()
     conditions = {'id': content}
     goods = queryset.filter(**conditions).all()
@@ -30,10 +40,16 @@ def page_comment(request, content):
     weight = []
     for a in top_words2:
         weight.append(float(a[0]))
-    print(top_words)
-    print(weight)
     queryset = GoodComment.objects.all()
     conditions = {'good_id': content}
+    if desc_search:
+        conditions['comment__contains'] = desc_search
+    if start_date:
+        start_date_new = start_date + ' 00:00:00'
+        conditions['create_time__gt'] = start_date_new
+    if end_date:
+        end_date_new = end_date + ' 23:59:59'
+        conditions['create_time__lt'] = end_date_new
     comments = queryset.filter(**conditions).all()
     good_comment = 0
     bad_comment = 0
@@ -45,15 +61,3 @@ def page_comment(request, content):
                 bad_comment = bad_comment + 1
     return render(request, 'comment.html', locals())
 
-
-def good(request):
-    queryset = Good.objects.all()
-    goods = queryset.filter().all().values_list('name', 'desc', 'favorable_rate', 'top_word')
-    return JsonResponse(list(goods), safe=False)
-
-
-def comment(request, content):
-    queryset = GoodComment.objects.all()
-    conditions = {'good_id': content}
-    comments = queryset.filter(**conditions).all().values_list('good_id', 'comment', 'positive', 'create_time')
-    return JsonResponse(list(comments), safe=False)

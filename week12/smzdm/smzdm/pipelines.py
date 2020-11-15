@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-
-# Define your item pipelines here
-#
-# Don't forget to add your pipeline to the ITEM_PIPELINES setting
-# See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 import pymysql
 import jieba.analyse
 from snownlp import SnowNLP
+import pandas
 from smzdm.settings import DB_INFO
 
 
@@ -19,12 +14,15 @@ class SmzdmPipeline:
             user=DB_INFO['user'],
             password=DB_INFO['password'],
             db=DB_INFO['db'])
-        print('open')
 
     def process_item(self, item, spider):
         itemId = item['id']
         name = item['name']
         desc = item['desc']
+        if name is None:
+            name = "无"
+        if desc is None:
+            desc = "无"
         comment = item['comment']
         comments = []
         comment_list = []
@@ -33,14 +31,23 @@ class SmzdmPipeline:
         for key in comment:
             in_id = key['id']
             comment_in = key['comment']
+            comment_in = comment_in.strip()
             date = key['create_time']
-            comment_list.append(comment_in)
-            is_good_item = is_good(comment_in)
-            if is_good_item == 0:
-                positive = positive + 1
+            is_good_item = 0
+            if comment_in:
+                comment_list.append(comment_in)
+                is_good_item = is_good(comment_in)
+                if is_good_item == 0:
+                    positive = positive + 1
+                else:
+                    negative = negative + 1
             else:
-                negative = negative + 1
+                comment_in = "无"
             comments.append((in_id, comment_in, is_good_item, date))
+        comments_pandas = pandas.DataFrame(data=comments)
+        comments_pandas = comments_pandas.fillna("无")
+        data_array = pandas.np.array(comments_pandas)
+        comments = data_array.tolist()
         rate = '无评论'
         if len(comment) > 0:
             rate = '{:.2f}%'.format(positive / (positive + negative) * 100)
@@ -66,7 +73,6 @@ class SmzdmPipeline:
 
     def close_spider(self, spider):
         self.conn.close()
-        print('close')
 
 
 def get_top_words(comments):

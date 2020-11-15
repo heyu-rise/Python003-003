@@ -17,6 +17,10 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid">
+                    <a class="nav-link" href="/">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        首页
+                    </a>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item active">{{good_item.name}}</li>
                     </ol>
@@ -49,19 +53,45 @@
                             <i class="fas fa-table mr-1"></i>
                             评论列表
                         </div>
+                        <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+                            <div class="input-group" style="margin: 5px">
+                                <label>开始时间:</label>
+                                <input id="dateStartInput" class="form-control" type="date"
+                                       style="margin-left: 5px;margin-right: 5px"
+                                       aria-label="Search"
+                                       aria-describedby="basic-addon2" value="{{start_date}}"/>
+                                <label>截止时间:</label>
+                                <input id="dateEndInput" class="form-control" type="date"
+                                       style="margin-left: 5px;margin-right: 5px"
+                                       aria-label="Search"
+                                       aria-describedby="basic-addon2" value="{{end_date}}"/>
+                                <input id="descInput" class="form-control" type="text" placeholder="内容"
+                                       style="margin-left: 5px;margin-right: 5px"
+                                       aria-label="Search"
+                                       aria-describedby="basic-addon2" value="{{desc_search}}"/>
+                                <button id="buttonClear" class="btn btn-info" type="button"
+                                        style="margin-left: 5px;margin-right: 5px"
+                                        onclick="inputClear()">清空
+                                </button>
+                                <button id="buttonSearch" class="btn btn-primary" type="button"
+                                        style="margin-left: 5px;margin-right: 5px"
+                                        onclick="search()">搜索
+                                </button>
+                            </div>
+                        </form>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                     <tr>
                                         <th>评论</th>
-                                        <th>评论时间</th>
+                                        <th width="200px">评论时间</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {% for comment in comments %}
                                     <tr>
-                                        <td>{{comment.comment}}</a></td>
+                                        <td>{{comment.comment}}</td>
                                         <td>{{comment.create_time}}</td>
                                     </tr>
                                     {% endfor %}
@@ -142,5 +172,19 @@ var myLineChart = new Chart(ctx, {
     }
   }
 });
+
+function search(){
+    var descInput = $("#descInput").val()
+    var dateStartInput = $("#dateStartInput").val()
+    var dateEndInput = $("#dateEndInput").val()
+    window.open('/comment/' + {{content}} + '?desc=' + descInput + '&startDate=' + dateStartInput + '&endDate=' + dateEndInput, '_self')
+}
+
+function inputClear(){
+    console.log('xxxx')
+    window.open('/comment/' + {{content}}, '_self')
+}
+
+
 </script>
 {% endblock %}

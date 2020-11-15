@@ -18,7 +18,7 @@ class PhoneSpider(scrapy.Spider):
     def parse(self, response):
         detail_urls = Selector(response=response).xpath('//ul[@id="feed-main-list"]//div/div['
                                                         '@class="z-feed-img"]/a/@href').extract()
-        num = 3
+        num = 1
         if len(detail_urls) > num:
             detail_urls = detail_urls[:num]
         for good_url in detail_urls:
