@@ -22,10 +22,10 @@ def index_search(request, content):
 
 
 def page_comment(request, content):
-    print(request)
     desc_search = request.GET.get('desc')
     start_date = request.GET.get('startDate')
     end_date = request.GET.get('endDate')
+    # 查询商品信息
     queryset = Good.objects.all()
     conditions = {'id': content}
     goods = queryset.filter(**conditions).all()
@@ -40,16 +40,9 @@ def page_comment(request, content):
     weight = []
     for a in top_words2:
         weight.append(float(a[0]))
+    # 查询评论信息
     queryset = GoodComment.objects.all()
     conditions = {'good_id': content}
-    if desc_search:
-        conditions['comment__contains'] = desc_search
-    if start_date:
-        start_date_new = start_date + ' 00:00:00'
-        conditions['create_time__gt'] = start_date_new
-    if end_date:
-        end_date_new = end_date + ' 23:59:59'
-        conditions['create_time__lt'] = end_date_new
     comments = queryset.filter(**conditions).all()
     good_comment = 0
     bad_comment = 0
@@ -59,5 +52,17 @@ def page_comment(request, content):
                 good_comment = good_comment + 1
             else:
                 bad_comment = bad_comment + 1
+    # 按条件搜索
+    if desc_search:
+        conditions['comment__contains'] = desc_search
+    else:
+        desc_search = ''
+    if start_date:
+        start_date_new = start_date + ' 00:00:00'
+        conditions['create_time__gt'] = start_date_new
+    if end_date:
+        end_date_new = end_date + ' 23:59:59'
+        conditions['create_time__lt'] = end_date_new
+    comments = queryset.filter(**conditions).all()
     return render(request, 'comment.html', locals())
 

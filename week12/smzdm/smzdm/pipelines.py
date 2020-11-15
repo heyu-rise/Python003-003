@@ -14,6 +14,18 @@ class SmzdmPipeline:
             user=DB_INFO['user'],
             password=DB_INFO['password'],
             db=DB_INFO['db'])
+        # 删除老数据
+        sql_good_delete = 'DELETE FROM good'
+        sql_comment_delete = 'DELETE FROM good_comment'
+        try:
+            cur = self.conn.cursor()
+            cur.execute(sql_good_delete)
+            cur.execute(sql_comment_delete)
+            self.conn.commit()
+            cur.close()
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
 
     def process_item(self, item, spider):
         itemId = item['id']
@@ -28,6 +40,7 @@ class SmzdmPipeline:
         comment_list = []
         positive = 0
         negative = 0
+        # 获取每条评论的舆情信息
         for key in comment:
             in_id = key['id']
             comment_in = key['comment']
@@ -44,6 +57,7 @@ class SmzdmPipeline:
             else:
                 comment_in = "无"
             comments.append((in_id, comment_in, is_good_item, date))
+        # 用pandas处理数据
         comments_pandas = pandas.DataFrame(data=comments)
         comments_pandas = comments_pandas.fillna("无")
         data_array = pandas.np.array(comments_pandas)
@@ -52,13 +66,10 @@ class SmzdmPipeline:
         if len(comment) > 0:
             rate = '{:.2f}%'.format(positive / (positive + negative) * 100)
         top_words = get_top_words(comment_list)
-        sql_good_delete = f'DELETE FROM good WHERE id = {itemId}'
-        sql_comment_delete = f'DELETE FROM good_comment WHERE good_id = {itemId}'
+        # 插入数据库
         sql_good_insert = f'INSERT INTO `good` VALUES ("{itemId}", "{name}", "{desc}", "{rate}", "{top_words}")'
         try:
             cur = self.conn.cursor()
-            cur.execute(sql_good_delete)
-            cur.execute(sql_comment_delete)
             cur.execute(sql_good_insert)
             if len(comment) > 0:
                 cur.executemany(
@@ -75,6 +86,7 @@ class SmzdmPipeline:
         self.conn.close()
 
 
+# 获取top词汇
 def get_top_words(comments):
     comment = ','.join(comments)
     text_rank = jieba.analyse.textrank(comment,
@@ -83,6 +95,7 @@ def get_top_words(comments):
     return str(text_rank)
 
 
+# 判断是否为好评
 def is_good(comment):
     s = SnowNLP(comment)
     s2 = s.sentiments

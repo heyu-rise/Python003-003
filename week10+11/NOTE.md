@@ -10,3 +10,11 @@
 python manage.py createsuperuser
 ```
 
+### 启动celery
+
+```shell
+生产者
+celery -A {projectname} beat -l info
+消费者
+celery -A {projectname} worker -l info
+```

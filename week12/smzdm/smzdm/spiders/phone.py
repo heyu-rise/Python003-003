@@ -15,10 +15,13 @@ class PhoneSpider(scrapy.Spider):
     allowed_domains = ['smzdm.com']
     start_urls = ['https://www.smzdm.com/fenlei/zhinengshouji/h5c4s0f0t0p1/#feed-main/']
 
+    def start_requests(self):
+        yield scrapy.Request(url=self.start_urls[0], callback=self.parse)
+
     def parse(self, response):
         detail_urls = Selector(response=response).xpath('//ul[@id="feed-main-list"]//div/div['
                                                         '@class="z-feed-img"]/a/@href').extract()
-        num = 1
+        num = 10
         if len(detail_urls) > num:
             detail_urls = detail_urls[:num]
         for good_url in detail_urls:
@@ -49,6 +52,7 @@ class PhoneSpider(scrapy.Spider):
             good_comments.append(good_comment)
         item_good['comment'] = good_comments
         meta_data = {'item': item_good}
+        # 获取下一页的链接
         next_page = content.xpath('//section[@id="comments"]//li[@class="pagedown"]/a/@href').extract_first()
         if next_page:
             yield scrapy.Request(url=next_page, meta=meta_data, callback=self.parse_comment)
@@ -67,6 +71,7 @@ class PhoneSpider(scrapy.Spider):
             date = get_time(date)
             good_comment = {'id': item_good['id'], 'comment': comment, 'create_time': date}
             item_good['comment'].append(good_comment)
+        # 获取下一页的链接
         next_page = content.xpath('//section[@id="comments"]//li[@class="pagedown"]/a/@href').extract_first()
         if next_page:
             yield scrapy.Request(url=next_page, meta=meta_data, callback=self.parse_comment)
@@ -74,6 +79,7 @@ class PhoneSpider(scrapy.Spider):
             yield item_good
 
 
+# 根据url获取商品id
 def get_id_by_url(url):
     nums = re.findall(id_pattern, url)
     if len(nums) == 0:
@@ -81,9 +87,8 @@ def get_id_by_url(url):
     return nums[0]
 
 
+# 根据时间
 def get_time(time_str):
-    # time_str = '14小时前'
-    # time_str = '11-11 16:17'
     comment_time = datetime.datetime.now()
     if time_str.__contains__('小时'):
         hour = re.findall(time_pattern, time_str)[0]
@@ -101,22 +106,3 @@ def get_time(time_str):
         comment_time = datetime.datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S')
     comment_time = comment_time.strftime('%Y-%m-%d %H:%M:%S')
     return comment_time
-
-
-def test2():
-    a = 1
-    with open(r'C:/Users/shy19/Desktop/新建文件夹/aaa.html', 'r', encoding='utf-8') as f:
-        a = f.read()
-        f.close()
-        if f.close() == 1:
-            print('sucess')
-        else:
-            print('filue')
-    content = Selector(text=a).xpath(
-        '//section[@id="comments"]//div[@id="commentTabBlockNew"]//li[@class="comment_list"]')
-    next_page = content.xpath('//section[@id="comments"]//li[@class="pagedown"]/a/@href').extract_first()
-    print(next_page)
-    if next_page:
-        print('xxx')
-    else:
-        print('aaa')
