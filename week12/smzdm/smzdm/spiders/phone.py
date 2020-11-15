@@ -13,12 +13,12 @@ time_pattern = '\\d{1,2}'
 class PhoneSpider(scrapy.Spider):
     name = 'phone'
     allowed_domains = ['smzdm.com']
-    start_urls = ['https://www.smzdm.com/fenlei/xifahufa/h5c4s0f0t0p1/#feed-main/']
+    start_urls = ['https://www.smzdm.com/fenlei/zhinengshouji/h5c4s0f0t0p1/#feed-main/']
 
     def parse(self, response):
         detail_urls = Selector(response=response).xpath('//ul[@id="feed-main-list"]//div/div['
                                                         '@class="z-feed-img"]/a/@href').extract()
-        num = 10
+        num = 3
         if len(detail_urls) > num:
             detail_urls = detail_urls[:num]
         for good_url in detail_urls:
@@ -73,6 +73,7 @@ class PhoneSpider(scrapy.Spider):
         else:
             yield item_good
 
+
 def get_id_by_url(url):
     nums = re.findall(id_pattern, url)
     if len(nums) == 0:
@@ -119,14 +120,3 @@ def test2():
         print('xxx')
     else:
         print('aaa')
-
-
-if __name__ == '__main__':
-    # a = 'https://www.smzdm.com/p/26806997/'
-    # x = get_id_by_url(a)
-    # print(x)
-    # test2()
-    # print(datetime.datetime.now())
-    comment_time = datetime.datetime.now()
-    xxx = comment_time.strftime('%Y-%m-%d %H:%M:%')
-    print(xxx)

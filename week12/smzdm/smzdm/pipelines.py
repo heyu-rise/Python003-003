@@ -51,11 +51,8 @@ class SmzdmPipeline:
         try:
             cur = self.conn.cursor()
             cur.execute(sql_good_delete)
-            # self.conn.commit()
             cur.execute(sql_comment_delete)
-            # self.conn.commit()
             cur.execute(sql_good_insert)
-            # self.conn.commit()
             if len(comment) > 0:
                 cur.executemany(
                     'INSERT INTO `good_comment` (`good_id`,`comment`,`positive`,`create_time`) VALUES (%s,%s,'
@@ -75,8 +72,8 @@ class SmzdmPipeline:
 def get_top_words(comments):
     comment = ','.join(comments)
     text_rank = jieba.analyse.textrank(comment,
-                                       topK=10,
-                                       withWeight=False)
+                                       topK=5,
+                                       withWeight=True)
     return str(text_rank)
 
 
