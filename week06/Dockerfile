@@ -12,14 +12,14 @@ EXPOSE 80/tcp
 
 # 使用pip命令安装这个应用所需要的依赖
 RUN rm -rf /etc/apt/sources.list
-RUN echo 'deb http://mirrors.163.com/debian/ stretch main non-free contrib\
-    deb http://mirrors.163.com/debian/ stretch-updates main non-free contrib\
-    deb http://mirrors.163.com/debian/ stretch-backports main non-free contrib\
-    deb-src http://mirrors.163.com/debian/ stretch main non-free contrib\
-    deb-src http://mirrors.163.com/debian/ stretch-updates main non-free contrib\
-    deb-src http://mirrors.163.com/debian/ stretch-backports main non-free contrib\
-    deb http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib\
-    deb-src http://mirrors.163.com/debian-security/ stretch/updates main non-free contrib' > /etc/apt/sources.list
+RUN echo 'deb http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
+    deb-src http://mirrors.aliyun.com/debian/ stretch main non-free contrib\
+    deb http://mirrors.aliyun.com/debian-security stretch/updates main\
+    deb-src http://mirrors.aliyun.com/debian-security stretch/updates main\
+    deb http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib\
+    deb-src http://mirrors.aliyun.com/debian/ stretch-updates main non-free contrib\
+    deb http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib\
+    deb-src http://mirrors.aliyun.com/debian/ stretch-backports main non-free contrib' > /etc/apt/sources.list
 RUN apt-get update && apt-get install default-libmysqlclient-dev -y && apt-get install gcc -y
 RUN pip install -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com -r requirements.txt
 
